@@ -1,4 +1,5 @@
-﻿using ExampleProject.BookOperations.CreateBook;
+﻿using AutoMapper;
+using ExampleProject.BookOperations.CreateBook;
 using ExampleProject.BookOperations.DeleteBookCommand;
 using ExampleProject.BookOperations.GetBookDetail;
 using ExampleProject.BookOperations.GetBooks;
@@ -20,43 +21,42 @@ namespace ExampleProject.Controllers
     public class BookController : ControllerBase
     {
         private readonly BookStoreDbContext _context;
+        private readonly IMapper _mapper;
         public BookController(BookStoreDbContext context)
         {
             _context = context;
         }
-
-        
         [HttpGet]
         public IActionResult GetBooks()
         {
-            GetBooksQuery query = new GetBooksQuery(_context);
+            GetBooksQuery query = new GetBooksQuery(_context,_mapper);
             var result = query.Handle();
             return Ok(result);
         }
         [HttpGet("{id}")]
         public IActionResult GetByID(int id)
         {
-            BookDetailViewModel result =new BookDetailViewModel();
+            BookDetailViewModel result = new BookDetailViewModel();
             try
             {
-                GetBookDetailQuery query = new GetBookDetailQuery(_context);
+                GetBookDetailQuery query = new GetBookDetailQuery(_context,_mapper);
                 query.BookId = id;
-                result = query.Handle();           
+                result = query.Handle();
             }
             catch (Exception ex)
             {
-                return BadRequest( ex.Message);
+                return BadRequest(ex.Message);
             }
             return Ok(result);
-        } 
- 
+        }
+
 
         [HttpPost]
-        public IActionResult AddBook([FromBody]CreateBookModel  newBook)
+        public IActionResult AddBook([FromBody] CreateBookModel newBook)
         {
             try
             {
-                CreateBookCommand command = new CreateBookCommand(_context);
+                CreateBookCommand command = new CreateBookCommand(_context,_mapper);
                 command.Model = newBook;
                 command.Handle();
             }
@@ -68,7 +68,7 @@ namespace ExampleProject.Controllers
 
 
             return Ok();
-        } 
+        }
         [HttpPut("{id}")]
         public IActionResult UpdateBook(int id, [FromBody] UpdateBookModel updatedBook)
         {
@@ -100,6 +100,6 @@ namespace ExampleProject.Controllers
             }
             return Ok();
         }
-        
+
     }
 }

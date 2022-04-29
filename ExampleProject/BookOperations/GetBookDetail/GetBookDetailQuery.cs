@@ -1,4 +1,5 @@
-﻿using ExampleProject.Common;
+﻿using AutoMapper;
+using ExampleProject.Common;
 using ExampleProject.DBOperations;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,10 @@ namespace ExampleProject.BookOperations.GetBookDetail
     public class GetBookDetailQuery
     {
         private readonly BookStoreDbContext _dbContext;
+        private readonly IMapper _mapper;
         public int BookId{ get; set; }
 
-        public GetBookDetailQuery(BookStoreDbContext dbContext)
+        public GetBookDetailQuery(BookStoreDbContext dbContext,IMapper mapper)
         {
             _dbContext = dbContext;
         }
@@ -21,11 +23,9 @@ namespace ExampleProject.BookOperations.GetBookDetail
             var book = (from bookStore in _dbContext.Books where bookStore.ID == BookId select bookStore).SingleOrDefault();
             if (book is null)
                 throw new InvalidOperationException("Kitap bulunamadı");
-            BookDetailViewModel vm = new BookDetailViewModel();
-            vm.Title = book.Title;
-            vm.Genre = ((GenreEnums)book.GenreId).ToString();
-            vm.PageCount = book.PageCount;
-            vm.PublishDate = book.PublishDate.ToString("dd/MM/yyyy");
+            BookDetailViewModel vm = _mapper.Map<BookDetailViewModel>(book);
+
+
             return vm;
         }
      

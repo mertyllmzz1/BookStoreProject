@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ExampleProject
@@ -39,6 +40,7 @@ namespace ExampleProject
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ExampleProject", Version = "v1" });
             });
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
